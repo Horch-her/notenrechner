@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linearer Notenschl&uuml;ssel Rechner</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Linearer Notenschl&uuml;ssel Rechner</h1>
+    <form id="gradeForm">
+        <label for="maxPoints">Maximale Punktzahl:</label>
+        <input type="number" id="maxPoints" placeholder="z.B. 100" required>
+
+        <label for="bestGrade">Beste Note (z.B. 1.0):</label>
+        <input type="number" step="0.1" id="bestGrade" value="1" required>
+
+        <label for="worstGrade">Schlechteste Note (z.B. 6.0):</label>
+        <input type="number" step="0.1" id="worstGrade" value="6" required>
+
+        <label for="gradeStep">Notenabstufung:</label>
+        <select id="gradeStep" required>
+            <option value="0.1">Zehntelnoten (1.0, 1.1, ...)</option>
+            <option value="0.25">Viertelnoten (1.0, 1.25, ...)</option>
+            <option value="0.5">Halbe Noten (1.0, 1.5, ...)</option>
+            <option value="1">Ganze Noten (1, 2, 3, ...)</option>
+        </select>
+
+        <label for="pointStep">Punkteabstufung:</label>
+        <select id="pointStep" required>
+            <option value="1">Ganze Punkte</option>
+            <option value="0.5">Halbe Punkte</option>
+        </select>
+
+        <button type="button" onclick="calculateGrades()">Berechnen</button>
+    </form>
+
+    <table id="resultTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>Punkte</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+        </tbody>
+    </table>
+
+    <script>
+        function calculateGrades() {
+            const maxPoints = parseFloat(document.getElementById('maxPoints').value);
+            const bestGrade = parseFloat(document.getElementById('bestGrade').value);
+            const worstGrade = parseFloat(document.getElementById('worstGrade').value);
+            const gradeStep = parseFloat(document.getElementById('gradeStep').value);
+            const pointStep = parseFloat(document.getElementById('pointStep').value);
+
+            if (isNaN(maxPoints) || isNaN(bestGrade) || isNaN(worstGrade) || isNaN(gradeStep) || isNaN(pointStep)) {
+                alert('Bitte alle Felder korrekt ausf&uuml;llen.');
+                return;
+            }
+
+            const gradeRange = worstGrade - bestGrade;
+            const resultBody = document.getElementById('resultBody');
+            resultBody.innerHTML = '';
+
+            for (let points = maxPoints; points >= 0; points -= pointStep) {
+                let grade = bestGrade + (worstGrade - bestGrade) * (1 - points / maxPoints);
+                grade = Math.round(grade / gradeStep) * gradeStep;
+                grade = grade.toFixed(2);
+
+                const row = document.createElement('tr');
+                const pointsCell = document.createElement('td');
+                const gradeCell = document.createElement('td');
+
+                pointsCell.textContent = points.toFixed(1);
+                gradeCell.textContent = grade;
+
+                row.appendChild(pointsCell);
+                row.appendChild(gradeCell);
+                resultBody.appendChild(row);
+            }
+
+            document.getElementById('resultTable').style.display = 'table';
+        }
+    </script>
+</body>
+</html>
